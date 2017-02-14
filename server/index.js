@@ -3,12 +3,15 @@ import path from 'path';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import App from './app/components/app';
+import apiRouter from './api';
 
 const app = express();
 
 app.set('views', './');
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, './public')));
+
+app.use('/api', apiRouter);
 
 const todos = ['eat breakfast', 'take a shower', 'apply to jobs'];
 
@@ -20,6 +23,11 @@ app.get('/', (req, res) => {
     reactInitialData: JSON.stringify(todos),
     content: renderToString(componentInstance)
   });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Internal server error.');
 });
 
 app.listen(3000, () => {
