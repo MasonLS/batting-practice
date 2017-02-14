@@ -3,9 +3,11 @@ import path from 'path';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import App from './app/components/app';
-import apiRouter from './api';
+import apiRouter from './api.js';
+import db from './db';
 
 const app = express();
+const SubmissionAnalytics = db.model('submissionanalytics');
 
 app.set('views', './');
 app.set('view engine', 'ejs');
@@ -13,16 +15,23 @@ app.use(express.static(path.join(__dirname, './public')));
 
 app.use('/api', apiRouter);
 
-const todos = ['eat breakfast', 'take a shower', 'apply to jobs'];
-
 const AppFactory = React.createFactory(App);
 
 app.get('/', (req, res) => {
-  const componentInstance = AppFactory({ initialData: todos });
-  res.render('index', {
-    reactInitialData: JSON.stringify(todos),
-    content: renderToString(componentInstance)
-  });
+  SubmissionAnalytics.findAll(
+    where: {
+      QUOTED_DATE: ''
+    }
+  )
+  .then(submissions => {
+    const componentInstance = AppFactory({ initialData: submissions });
+
+    res.render('index', {
+      reactInitialData: JSON.stringify(submissions),
+      content: renderToString(componentInstance)
+    });
+  })
+  .catch(next);
 });
 
 app.use((err, req, res, next) => {
