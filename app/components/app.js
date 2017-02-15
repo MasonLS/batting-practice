@@ -1,10 +1,18 @@
 import React, { Component, PropTypes } from 'react';
 import { notReviewed, quoteAccepted } from '../utils/filters';
-import columns from '../utils/tableColumns';
+import tableColumns from '../utils/table-columns';
 import { Grid, Row, Col, Form, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 import DataTable from './data-table';
 import SubmissionSelect from './submissions-select';
 import QuotedSelect from './quoted-select';
+
+function filterData(filters, data) {
+  let filteredData = [...data];
+  filters.forEach(filterFn => {
+    filteredData = filteredData.filter(filterFn);
+  });
+  return filteredData;
+}
 
 export default class App extends Component {
   constructor() {
@@ -13,48 +21,47 @@ export default class App extends Component {
     this.state = {
       data: this.props.initialData || [],
       dataType: 'submissions',
-      filteredData: this.filterData([notReviewed]),
-      tableColumns: columns.notReviewed
+      filters: [notReviewed],
+      filteredData: filterData([notReviewed], this.props.initialData),
+      tableColumns: tableColumns.notReviewed
     };
+
+    this.handleChangeDataType = this.handleChangeDataType.bind(this);
+    this.setTableColumns = this.setTableColumns.bind(this);
+    this.setFilters = this.setFilters.bind(this);
   }
 
-  setDataType: (dataType) => {
-    let apiURL, tableColumns, filters;
+  handleChangeDataType(e) {
+    const dataType = e.target.value;
+    let apiURL, columns, filters;
 
     if (dataType === 'submissions') {
-      apiURL = '/submissions';
-      tableColumns = columns.notReviewed;
+      apiURL = 'api/submissions';
+      columns = tableColumns.notReviewed;
       filters = [notReviewed];
     } else {
-      apiURL = '/submissions/quoted';
-      tableColumns = columns.quoteAccepted;
+      apiURL = 'api/submissions/quoted';
+      columns = tableColumns.quoteAccepted;
       filters = [quoteAccepted];
     }
-
-    this.setState({ dataType, tableColumns, filteredData: this.filterData(filters) });
 
     fetch(apiURL, {
       accept: 'application/json'
     })
     .then(response => response.json())
     .then(data => {
-      this.setState({ data });
+      this.setState({ data, dataType, tableColumns: columns });
+      this.setFilters(filters);
     })
     .catch(console.error);
   }
 
-  setTableColumns: (tableColumns) => {
+  setTableColumns(tableColumns) {
     this.setState({ tableColumns });
   }
 
-  filterData: (filters) => {
-    let filteredData = this.state.data;
-
-    filters.forEach(filterFn => {
-      filteredData = filteredData.filter(filterFn);
-    });
-
-    this.setState({ filteredData });
+  setFilters(filters) {
+    this.setState({ filters: filters, filteredData: filterData(filters, this.state.data) });
   }
 
   render() {
@@ -66,8 +73,8 @@ export default class App extends Component {
               <FormGroup controlId="formInlineName">
                 <ControlLabel>View</ControlLabel>
                 {' '}
-                <FormControl componentClass="select" value={this.state.dataType}>
-                  <option value="submissions">submissions</option>
+                <FormControl componentClass="select" value={this.state.dataType} onChange={this.handleChangeDataType}>
+                  <option value="submissions">client submissions</option>
                   <option value="quoted">quoted rates</option>
                 </FormControl>
               </FormGroup>
@@ -76,7 +83,8 @@ export default class App extends Component {
                 <ControlLabel>that have been</ControlLabel>
                 {' '}
               {
-                this.state.dataType === 'submissions' ? <SubmissionSelect filterData={this.filterData.bind(this)} /> : <QuotedSelect filterData={this.filterData.bind(this)} />
+                this.state.dataType === 'submissions' ? <SubmissionSelect setFilters={this.setFilters} setTableColumns={this.setTableColumns} />
+                                                      : <QuotedSelect setFilters={this.setFilters} setTableColumns={this.setTableColumns} />
               }
               </FormGroup>
             </Form>
@@ -84,7 +92,7 @@ export default class App extends Component {
         </Row>
         <Row>
           <Col sm={12}>
-            <DataTable data={this.state.filteredData} columns={this.state.columns}/>
+            <DataTable data={this.state.filteredData} columns={this.state.tableColumns}/>
           </Col>
         </Row>
       </Grid>

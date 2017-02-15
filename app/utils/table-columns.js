@@ -1,14 +1,26 @@
 export default {
   notReviewed: [
     {
-      field: '',
-      columnName: ''
+      field: 'AGENT_NAME',
+      columnName: 'Agent'
+    }
+  ],
+  notQuoted: [
+    {
+      field: 'AGENT_NAME',
+      columnName: 'Agent'
     }
   ],
   quoteAccepted: [
     {
-      field: '',
-      columnName: ''
+      field: 'AGENT_NAME',
+      columnName: 'Agent'
+    }
+  ],
+  quoteRejected: [
+    {
+      field: 'AGENT_NAME',
+      columnName: 'Agent'
     }
   ]
 }
