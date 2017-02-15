@@ -1,6 +1,10 @@
-import Sequelize from 'sequelize';
-import env from 'env';
+import mysql from 'mysql';
+import env from './env';
 
-export default new Sequelize(env.DB_NAME, env.DB_USERNAME, env.DB_PASSWORD, {
-
+export default mysql.createConnection({
+  host: env.DB_HOSTNAME,
+  port: env.DB_PORT,
+  user: env.DB_USERNAME,
+  password : env.DB_PASSWORD,
+  database : env.DB_NAME
 });

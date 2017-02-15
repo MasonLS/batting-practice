@@ -16,7 +16,7 @@ export default class DataTable extends Component {
           {
             this.props.data.map(row => {
               return (
-                <tr key={row.id}>
+                <tr key={row.ID}>
                   {
                     this.props.columns.map(col => <td key={col.field}>{row[col.field]}</td>)
                   }
