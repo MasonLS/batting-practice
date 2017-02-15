@@ -13,7 +13,3 @@ export function quoteAccepted(submission) {
 export function quoteRejected(submission) {
   return submission.REJECT_AFTER_QUOTE_FLAG === 'Y';
 }
-
-// export function noResponse(submission) {
-//   return submission.REJECT_DATE === '' && submission.BOUND_DATE === '';
-// }

@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Table } from 'react-bootstrap';
+import DataRow from './data-row';
 
 export default class DataTable extends Component {
   render() {
@@ -14,15 +15,7 @@ export default class DataTable extends Component {
         </thead>
         <tbody>
           {
-            this.props.data.map(row => {
-              return (
-                <tr key={row.ID}>
-                  {
-                    this.props.columns.map(col => <td key={col.field}>{row[col.field]}</td>)
-                  }
-                </tr>
-              );
-            })
+            this.props.data.map(row => <DataRow key={row.ID} row={row} columns={this.props.columns} />)
           }
         </tbody>
       </Table>

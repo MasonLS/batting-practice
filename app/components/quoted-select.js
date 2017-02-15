@@ -33,7 +33,6 @@ export default class QuotedSelect extends Component {
       <FormControl componentClass="select" value={this.state.selected} onChange={this.handleChange.bind(this)}>
         <option value="quoteAccepted">accepted</option>
         <option value="quoteRejected">rejected</option>
-        {/* <option value={noResponse}>(no response)</option> */}
       </FormControl>
     );
   }

@@ -1,18 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { notReviewed, quoteAccepted } from '../utils/filters';
 import tableColumns from '../utils/table-columns';
-import { Grid, Row, Col, Form, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
+import { Grid, Row, Col, Form, FormGroup, ControlLabel, FormControl, PageHeader } from 'react-bootstrap';
 import DataTable from './data-table';
 import SubmissionSelect from './submissions-select';
 import QuotedSelect from './quoted-select';
-
-function filterData(filters, data) {
-  let filteredData = [...data];
-  filters.forEach(filterFn => {
-    filteredData = filteredData.filter(filterFn);
-  });
-  return filteredData;
-}
 
 export default class App extends Component {
   constructor() {
@@ -68,18 +60,21 @@ export default class App extends Component {
     return (
       <Grid>
         <Row>
+          <PageHeader style={ { borderBottom: 'none' } }>Underwriter Portal</PageHeader>
+        </Row>
+        <Row>
           <Col sm={12}>
             <Form inline>
-              <FormGroup controlId="formInlineName">
+              <FormGroup>
                 <ControlLabel>View</ControlLabel>
                 {' '}
                 <FormControl componentClass="select" value={this.state.dataType} onChange={this.handleChangeDataType}>
                   <option value="submissions">client submissions</option>
-                  <option value="quoted">quoted rates</option>
+                  <option value="quoted">quoted submissions</option>
                 </FormControl>
               </FormGroup>
               {' '}
-              <FormGroup controlId="formInlineEmail">
+              <FormGroup>
                 <ControlLabel>that have been</ControlLabel>
                 {' '}
               {
@@ -98,6 +93,16 @@ export default class App extends Component {
       </Grid>
     );
   }
+}
+
+function filterData(filters, data) {
+  let filteredData = [...data];
+
+  filters.forEach(filterFn => {
+    filteredData = filteredData.filter(filterFn);
+  });
+
+  return filteredData;
 }
 
 App.propTypes = {
